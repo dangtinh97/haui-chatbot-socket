@@ -13,12 +13,8 @@ class SocketController {
     public io:Server
     public fromUserOid:string
     public roomOid:string
-    public roomId:number
     public socketService:SocketService
-    public room:any
     public users:any
-    public fromUser:any
-    public toUser:any
     public room_uuid:string
     public constructor(socket:Server) {
         this.socketService = new SocketService()
@@ -75,7 +71,7 @@ class SocketController {
         // socket.on(SEND_TYPING,(data:any)=>this._typing(data))
         // socket.on(SEND_REACTION,(data:any)=>this._sendReaction(data))
         socket.on("disconnect",()=>this._disconnect(socket,userOid))
-        socket.on(JOIN_ROOM,(data:any)=>this._joinRoom(socket,data,userOid()))
+        socket.on(JOIN_ROOM,(data:any)=>this._joinRoom(socket,data,userOid))
         // this.io.to(this.roomOid).emit(USER_ONLINE,{
         //     from_user_oid:this.fromUserOid
         // })
