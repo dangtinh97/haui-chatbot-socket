@@ -5,9 +5,3 @@ export default {
     },
     versionKey:false
 }
-
-export const save = function (next:any)
-{
-    this.deleted_flag = false
-    next()
-}

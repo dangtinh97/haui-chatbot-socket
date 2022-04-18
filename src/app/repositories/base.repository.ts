@@ -1,6 +1,4 @@
 import {Model, Schema} from 'mongoose'
-import * as mongoose from "mongoose";
-import Counter from "../models/counter.model";
 
 export abstract class BaseRepository
 {
@@ -16,18 +14,12 @@ export abstract class BaseRepository
 
     async find(cond:object):Promise<Array<any>>{
         let condNew:any = JSON.parse(JSON.stringify(cond))
-        condNew.deleted_flag={
-            $ne:true
-        }
         return await this._model.find(condNew).exec()
     }
 
     async findOne(cond:object):Promise<any>{
         let condNew:any = JSON.parse(JSON.stringify(cond))
-        condNew.deleted_flag={
-            $ne:true
-        }
-        return await this._model.findOne(condNew).exec()
+        return await this._model.findOne(cond).exec()
     }
 
     async update(cond: object, data: object): Promise<object> {
@@ -38,7 +30,7 @@ export abstract class BaseRepository
         return await this._model.updateMany(cond,data).exec()
     }
 
-    async create(data:object):Promise<object> {
+    async create(data:object):Promise<any> {
         return await this._model.create(data);
     }
 
@@ -66,23 +58,6 @@ export abstract class BaseRepository
             upsert:upsert,
             returnDocument:"after"
         }).exec()
-    }
-
-    async countId():Promise<number>
-    {
-
-        let modelName = this._model.collection.collectionName
-        let count = await Counter.findOneAndUpdate({
-            name_collection:modelName,
-        },{
-            $inc:{
-                id:1
-            }
-        },{
-            upsert:true,
-            returnDocument:"after"
-        }).exec()
-       return count.id
     }
 
     async insert(data:Array<object>):Promise<any>{

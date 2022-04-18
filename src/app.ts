@@ -5,7 +5,6 @@ import http, {ServerOptions} from "http";
 import helmet from "helmet";
 import appConfig from '../src/config/app'
 import bodyParser from "body-parser";
-import {api, apiAuth} from "./routes/api";
 import i18n from 'i18n'
 import ResponseError from "./app/responses/ResponseError";
 import lang from "./config/lang";
@@ -35,7 +34,6 @@ class App {
         this.app.use(bodyParser.urlencoded({extended:true}))
         this.app.use(helmet())
         this.app.use(i18n.init)
-        // this.app.use(api)
         this.app.use((req,res,next)=>{
             return res.json((new ResponseError(404,res.__('url_not_exists'))).toObject())
         })

@@ -1,24 +1,19 @@
 import {BaseRepository} from "./base.repository";
-import Message from "../models/message.model";
-import StrHelper from "../helpers/str.helper";
+import Message from "../models/message";
+
 
 class MessageRepository extends BaseRepository{
     constructor() {
         super(Message);
     }
 
-    async getMessage(roomId:Number,lastOid:string)
+    async listMessage(roomUUID:string,lastOid:string):Promise<Array<any>>
     {
         return new Promise((resolve:any)=>{
             this._model.aggregate([
                 {
                     $match:{
-                        room_id:roomId,
-                        _id: lastOid === "" ? {
-                            $exists:true
-                        } : {
-                            $gt:StrHelper.toObjectId(lastOid)
-                        }
+                        room_uuid:roomUUID
                     }
                 },
                 {
@@ -27,9 +22,9 @@ class MessageRepository extends BaseRepository{
                     }
                 },
                 {
-                    $limit:20
+                    $limit:25
                 }
-            ]).then(resolve)
+            ]).then((res:Array<any>)=> resolve(res))
         })
     }
 }
