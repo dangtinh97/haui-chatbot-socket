@@ -66,38 +66,40 @@ class SocketController {
 
     private _connection(socket:Socket)
     {
-        this.socketService.saveSocket(socket.id,this.fromUserOid).then()
+        let token = socket.handshake.auth.token
+        let decoded = jwt.verify(token.replace('Bearer ', ''), jwtConfig.secret);
+        let userOid = decoded.sub
+        this.socketService.saveSocket(socket.id,userOid).then()
 
         // socket.join(this.roomOid)
-        socket.on(SEND_MESSAGE,(data:any)=>this._sendMessage(data,socket))
+        socket.on(SEND_MESSAGE,(data:any)=>this._sendMessage(data,userOid))
         // socket.on(SEND_TYPING,(data:any)=>this._typing(data))
         // socket.on(SEND_REACTION,(data:any)=>this._sendReaction(data))
-        socket.on("disconnect",()=>this._disconnect(socket))
-        socket.on(JOIN_ROOM,(data:any)=>this._joinRoom(socket,data))
+        socket.on("disconnect",()=>this._disconnect(socket,userOid))
+        socket.on(JOIN_ROOM,(data:any)=>this._joinRoom(socket,data,userOid()))
         // this.io.to(this.roomOid).emit(USER_ONLINE,{
         //     from_user_oid:this.fromUserOid
         // })
     }
 
-    async _joinRoom(socket:Socket,data:any)
+    async _joinRoom(socket:Socket,data:any,userOid:string)
     {
         socket.join(data.room_uuid)
         this.room_uuid = data.room_uuid.toString()
         this.io.to(this.room_uuid).emit(JOIN_ROOM,{
-            from_user_oid:this.fromUserOid
+            from_user_oid:userOid
         })
     }
 
-    async _sendMessage(data:any,socket:Socket)
+    async _sendMessage(data:any,userOid:string)
     {
         this.io.to(data.room_uuid).emit(SEND_MESSAGE,{
-            from_user_oid:this.fromUserOid,
+            from_user_oid:userOid,
             message:data.message
         })
-
     }
 
-    public _disconnect(socket:Socket){
+    public _disconnect(socket:Socket,userOid:string){
         this.socketService.saveSocket(socket.id,this.fromUserOid,"PULL").then()
     }
 
