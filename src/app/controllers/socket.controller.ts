@@ -7,7 +7,7 @@ const { createAdapter } = require("@socket.io/mongo-adapter");
 const { MongoClient } = require("mongodb");
 import {JOIN_ROOM, SEND_MESSAGE, SEND_REACTION, SEND_TYPING, USER_ONLINE} from '../constants/constants'
 import databaseConfig from '../../config/database'
-const DB = "datinee";
+const DB = "nguoi-la";
 const COLLECTION = "socket.io-adapter-events";
 class SocketController {
     public io:Server
@@ -71,7 +71,6 @@ class SocketController {
         let userOid = decoded.sub
         this.socketService.saveSocket(socket.id,userOid).then()
 
-        // socket.join(this.roomOid)
         socket.on(SEND_MESSAGE,(data:any)=>this._sendMessage(data,userOid))
         // socket.on(SEND_TYPING,(data:any)=>this._typing(data))
         // socket.on(SEND_REACTION,(data:any)=>this._sendReaction(data))
