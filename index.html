@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SOCKET</title>
+</head>
+<body>
+<input id="message">
+<button id="btn-send" type="button">Send</button>
+<button id="reaction"></button>
+<script
+        src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"
+        integrity="sha512-MgkNs0gNdrnOM7k+0L+wgiRc5aLgl74sJQKbIWegVIMvVGPc1+gc1L2oK9Wf/D9pq58eqIJAxOonYPVE5UwUFA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded",function (){
+      var Sha256 = CryptoJS.SHA256;
+      var Hex = CryptoJS.enc.Hex;
+      var Utf8 = CryptoJS.enc.Utf8;
+      var Base64 = CryptoJS.enc.Base64;
+      var AES = CryptoJS.AES;
+      let oidMessage = null
+      const socket = io("http://localhost:3004", {
+          auth:{
+            token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NDg2MzU3MjEsIm5iZiI6MTY0ODYzNTcyMSwiZXhwIjoxNjQ4NzIyMTIxLCJzdWIiOiI2MjQwMWUzNjkwZjdlZGYzZjY1ZmQ3MTcifQ.wOK13Oq--fMcslG7vx5VdMeyC1_IT5XsioAaeaFH_fs"
+          },
+          query:{
+              room_oid:'6242b7b763cb68ce1c3687e3'
+          },
+          transports: ["websocket", "polling"] // use WebSocket first, if available
+      });
+      const key = '5db82939c85b612d2ac8fd2c13228219'
+      var secret_key = 'thisIsK3y';
+      var secret_iv  = 'tHis1s1v';
+
+      var iv = key.substr(0,16);
+      $(this).on("click",'#btn-send',function (){
+          let data = {
+              message:$("#message").val().trim(),
+              media:["624020220f103808c223428e"],
+              type_message:"TEXT_IMAGE"
+          }
+// Encryption
+          var output = AES.encrypt(JSON.stringify(data), Utf8.parse(key), {
+              iv: Utf8.parse(iv),
+          }).toString(); // First Base64 encoding, by default (see 1.)
+          console.log(output)
+          // const dataEncrypt = ''
+          socket.emit('SEND_MESSAGE',{
+              data:output
+          })
+
+          $("#message").val("")
+      })
+
+      socket.on("SEND_MESSAGE",_sendMessage)
+
+      function _sendMessage(data)
+      {
+          oidMessage = data.message_oid
+          $("#reaction").html("SEND REACTION TO: "+oidMessage)
+          console.log(data)
+      }
+
+      $(this).on('click','#reaction',function (){
+          socket.emit('SEND_REACTION',{
+              message_oid:oidMessage
+          })
+      })
+  })
+</script>
+</body>
+</html>

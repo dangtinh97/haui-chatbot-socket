@@ -1,0 +1,32 @@
+{
+	"url_not_exists": "Đường dẫn không tồn tại.",
+	"server_error": "Hệ thống đang bảo trì, vui lòng thử lại!",
+	"success": "success",
+	"update_success": "Cập nhật thành công.",
+	"validation": {
+		"required": "Thông tin %s không được để trống.",
+		"email": "Thông tin %s không hợp lệ.",
+		"is_numeric": "Thông tin %s phải là một số.",
+		"in_array": "Thông tin %s không hợp lệ.",
+		"between": "Thông tin %s phải ở giữa %s và %s.",
+		"Invalid value": "Thông tin %s không hợp lệ.",
+		"is_array": "Thông tin %s không hợp lệ."
+	},
+	"attribute": {
+		"password": "mật khẩu",
+		"username": "đăng nhập",
+		"email": "email",
+		"gender": "giới tính",
+		"age": "độ tuổi",
+		"care_about_gender": "giới tính quan tâm",
+		"address": "địa chỉ",
+		"list_choice": "attribute.list_choice",
+		"add_images": "ảnh",
+		"delete_images": "attribute.delete_images"
+	},
+	"user": {
+		"email_exists": "Địa chỉ email đã tồn tại.",
+		"login_not_valid": "Thông tin đăng nhập không hợp lệ.",
+		"account_not_verified": "Tài khoản chưa xác thực,"
+	}
+}
