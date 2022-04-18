@@ -69,7 +69,7 @@ class SocketController {
         this.socketService.saveSocket(socket.id,this.fromUserOid).then()
 
         // socket.join(this.roomOid)
-        // socket.on(SEND_MESSAGE,(data:any)=>this._sendMessage(data,socket))
+        socket.on(SEND_MESSAGE,(data:any)=>this._sendMessage(data,socket))
         // socket.on(SEND_TYPING,(data:any)=>this._typing(data))
         // socket.on(SEND_REACTION,(data:any)=>this._sendReaction(data))
         socket.on("disconnect",()=>this._disconnect(socket))
@@ -90,9 +90,10 @@ class SocketController {
 
     async _sendMessage(data:any,socket:Socket)
     {
-        let io:Server = this.io
-        let roomOid:string = this.roomOid
-        let fromUserOid:string = this.fromUserOid
+        this.io.to(data.room_uuid).emit(SEND_MESSAGE,{
+            from_user_oid:this.fromUserOid,
+            message:data.message
+        })
 
     }
 
