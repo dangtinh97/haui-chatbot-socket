@@ -5,7 +5,14 @@ import StrHelper from "../helpers/str.helper";
 const jwt = require('jsonwebtoken')
 const { createAdapter } = require("@socket.io/mongo-adapter");
 const { MongoClient } = require("mongodb");
-import {JOIN_ROOM, SEND_MESSAGE, SEND_REACTION, SEND_TYPING, USER_ONLINE} from '../constants/constants'
+import {
+    JOIN_ROOM,
+    SEND_MESSAGE,
+    SEND_REACTION,
+    SEND_TYPING, SOCKET_DISCONNECT_WITH_YOU,
+    SOCKET_NEW_CONNECT,
+    USER_ONLINE
+} from '../constants/constants'
 import databaseConfig from '../../config/database'
 const DB = "nguoi-la";
 const COLLECTION = "socket.io-adapter-events";
@@ -72,9 +79,27 @@ class SocketController {
         // socket.on(SEND_REACTION,(data:any)=>this._sendReaction(data))
         socket.on("disconnect",()=>this._disconnect(socket,userOid))
         socket.on(JOIN_ROOM,(data:any)=>this._joinRoom(socket,data,userOid))
+        socket.on(SOCKET_NEW_CONNECT,(data:any)=>this._socketNewConnect(socket,data,userOid))
+        socket.on(SOCKET_DISCONNECT_WITH_YOU,(data:any)=>this._socketDisconnectWithYou(socket,data,userOid))
         // this.io.to(this.roomOid).emit(USER_ONLINE,{
         //     from_user_oid:this.fromUserOid
         // })
+    }
+
+    async _socketNewConnect(socket:Socket,data:any,fromUserOid:string)
+    {
+        this.io.to(data.room_uuid).emit(SOCKET_NEW_CONNECT,{
+            from_user_oid:fromUserOid
+        })
+    }
+
+    async _socketDisconnectWithYou(socket:Socket,data:any,fromUserOid:string)
+    {
+        this.io.to(data.room_uuid).emit(SOCKET_DISCONNECT_WITH_YOU,{
+            from_user_oid:fromUserOid
+        })
+
+        socket.leave(data.room_uuid)
     }
 
     async _joinRoom(socket:Socket,data:any,userOid:string)
