@@ -89,7 +89,7 @@ class SocketController {
 
     async _onTyping(socket:Socket,data:any,userOid:string)
     {
-        this.io.to(data.room_uuid).emit(SOCKET_NEW_CONNECT,{
+        this.io.to(data.room_uuid).emit(SOCKET_TYING,{
             type:data.type,
             from_user_oid:userOid
         })
