@@ -10,7 +10,7 @@ import {
     SEND_MESSAGE,
     SEND_REACTION,
     SEND_TYPING, SOCKET_DISCONNECT_WITH_YOU,
-    SOCKET_NEW_CONNECT,
+    SOCKET_NEW_CONNECT, SOCKET_TYING,
     USER_ONLINE
 } from '../constants/constants'
 import databaseConfig from '../../config/database'
@@ -81,9 +81,18 @@ class SocketController {
         socket.on(JOIN_ROOM,(data:any)=>this._joinRoom(socket,data,userOid))
         socket.on(SOCKET_NEW_CONNECT,(data:any)=>this._socketNewConnect(socket,data,userOid))
         socket.on(SOCKET_DISCONNECT_WITH_YOU,(data:any)=>this._socketDisconnectWithYou(socket,data,userOid))
+        socket.on(SOCKET_TYING,(data:any)=>this._onTyping(socket,data,userOid))
         // this.io.to(this.roomOid).emit(USER_ONLINE,{
         //     from_user_oid:this.fromUserOid
         // })
+    }
+
+    async _onTyping(socket:Socket,data:any,userOid:string)
+    {
+        this.io.to(data.room_uuid).emit(SOCKET_NEW_CONNECT,{
+            type:data.type,
+            from_user_oid:userOid
+        })
     }
 
     async _socketNewConnect(socket:Socket,data:any,fromUserOid:string)
